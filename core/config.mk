@@ -317,6 +317,9 @@ include $(BUILD_SYSTEM)/envsetup.mk
 FIND_LEAVES_EXCLUDES := $(addprefix --prune=, $(SCAN_EXCLUDE_DIRS) .repo .git)
 
 -include vendor/extra/BoardConfigExtra.mk
+ifneq ($(AOSP_BUILD),)
+include vendor/aosp/config/BoardConfigAOSP.mk
+endif
 
 # The build system exposes several variables for where to find the kernel
 # headers:
@@ -1161,6 +1164,8 @@ dont_bother_goals := out \
 # consistency with those defined in BoardConfig.mk files.
 include $(BUILD_SYSTEM)/android_soong_config_vars.mk
 
+
+
 ifeq ($(CALLED_FROM_SETUP),true)
 include $(BUILD_SYSTEM)/ninja_config.mk
 include $(BUILD_SYSTEM)/soong_config.mk
@@ -1170,6 +1175,9 @@ endif
 -include external/ltp/android/ltp_package_list.mk
 DEFAULT_DATA_OUT_MODULES := ltp $(ltp_packages) $(kselftest_modules)
 .KATI_READONLY := DEFAULT_DATA_OUT_MODULES
+
+# Include any vendor specific config.mk file
+-include vendor/*/build/core/config.mk
 
 # Make RECORD_ALL_DEPS readonly.
 RECORD_ALL_DEPS :=$= $(filter true,$(RECORD_ALL_DEPS))
